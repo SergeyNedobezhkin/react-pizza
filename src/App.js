@@ -5,9 +5,11 @@ import Header from "./components/Header";
 import Categories from "./components/Categories";
 import Sort from "./components/Sort";
 import PizzaBlock from "./components/PizzaBlock/PizzaBlock";
+import SkeletonLoader from "./components/PizzaBlock/SkeletonLoader";
 
 function App() {
   const [pizzas, setPizzas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     try {
@@ -15,7 +17,7 @@ function App() {
         const pizzasResponse = await axios.get(
           "https://3e507001f067fc57.mokky.ru/items"
         );
-
+        setIsLoading(false);
         return setPizzas(pizzasResponse.data);
       }
       axiosData();
@@ -36,9 +38,11 @@ function App() {
           </div>
           <h2 className="content__title">Все пиццы</h2>
           <div className="content__items">
-            {pizzas.map((obj) => (
-              <PizzaBlock key={obj.id} {...obj} />
-            ))}
+            {isLoading
+              ? [...new Array(6)].map((_, index) => (
+                  <SkeletonLoader key={index} />
+                ))
+              : pizzas.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
           </div>
         </div>
       </div>
