@@ -18,6 +18,7 @@ function Categories() {
       <ul>
         {categories.map((item, index) => (
           <li
+            key={item}
             onClick={() => {
               handlerActiveIndex(index);
             }}
