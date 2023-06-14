@@ -1,0 +1,36 @@
+.root {
+  text-align: center;
+  font-size: 64px;
+  padding: 100px;
+  max-width: 750px;
+  margin: 0 auto;
+}
+#blink5 {
+  -webkit-animation: blink5 2s linear infinite;
+  animation: blink5 2s linear infinite;
+}
+@-webkit-keyframes blink5 {
+  0% {
+    color: rgb(128, 0, 0);
+  }
+  50% {
+    color: rgb(183, 65, 14);
+  }
+  100% {
+    color: rgb(128, 0, 0);
+  }
+}
+@keyframes blink5 {
+  0% {
+    color: rgb(203, 148, 46);
+  }
+  50% {
+    color: rgb(183, 65, 14);
+  }
+  100% {
+    color: rgb(212, 198, 131);
+  }
+}
+.discription {
+  font-size: 24px;
+}
