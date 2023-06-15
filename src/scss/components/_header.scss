@@ -3,13 +3,25 @@
 .header {
   border-bottom: 1px solid $gray-line;
   padding: 40px 0;
+  @media (max-width: 650px) {
+    padding-top: 40px 0;
+    padding-bottom: 5px;
+  }
 
   .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    a {
+      margin-bottom: 30px;
+    }
+    @media (max-width: 650px) {
+      flex-direction: column;
+      .header__cart {
+        margin-bottom: 0px;
+      }
+    }
   }
-
   &__logo {
     display: flex;
 
@@ -27,6 +39,11 @@
 
     p {
       color: #7b7b7b;
+    }
+    @media (max-width: 460px) {
+      p {
+        font-size: 14px;
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ function Home() {
           "https://3e507001f067fc57.mokky.ru/items"
         );
         setIsLoading(false);
+        window.scrollTo(0, 0);
         return setPizzas(pizzasResponse.data);
       }
       axiosData();
@@ -25,15 +26,19 @@ function Home() {
   }, []);
   return (
     <>
-      <div className="content__top">
-        <Categories />
-        <Sort />
-      </div>
-      <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">
-        {isLoading
-          ? [...new Array(6)].map((_, index) => <SkeletonLoader key={index} />)
-          : pizzas.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
+      <div className="container">
+        <div className="content__top">
+          <Categories />
+          <Sort />
+        </div>
+        <h2 className="content__title">Все пиццы</h2>
+        <div className="content__items">
+          {isLoading
+            ? [...new Array(6)].map((_, index) => (
+                <SkeletonLoader key={index} />
+              ))
+            : pizzas.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
+        </div>
       </div>
     </>
   );
