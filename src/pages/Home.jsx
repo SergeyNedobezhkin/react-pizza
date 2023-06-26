@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setCategoryId } from "../redux/slices/filterSlice";
 import axios from "axios";
 import SkeletonLoader from "../components/PizzaBlock/SkeletonLoader";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
@@ -8,26 +10,30 @@ import Pagination from "../components/Pagination/Pagination";
 import { AppContext } from "../App";
 
 function Home() {
+  const dispatch = useDispatch();
+  const categoryId = useSelector((state) => state.filterSlice.categoryId);
+  const sortType = useSelector((state) => state.filterSlice.sort);
+
   const { searchValue } = useContext(AppContext);
   const [pizzas, setPizzas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortType, setSortType] = useState({
-    name: "популярности",
-    sortProperty: "rating",
-  });
-  const [categoryId, setCategoryId] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pizzasPerPage] = useState(4);
-  const category = categoryId > 0 ? `category=*${categoryId}` : "";
-  const sortBy = sortType.sortProperty;
-  const search = searchValue ? `&title=*${searchValue}*` : "";
   // page=${currentPage}&limit=${pizzasPerPage}&
+
+  const onChangeCategory = (id) => {
+    dispatch(setCategoryId(id));
+  };
+
   useEffect(() => {
     try {
       setIsLoading(true);
+      const category = categoryId > 0 ? `category=*${categoryId}` : "";
+      const sortBy = sortType.sortProperty;
+      const search = searchValue ? `&title=*${searchValue}*` : "";
       async function axiosData() {
         const pizzasResponse = await axios.get(
-          `https://3e507001f067fc57.mokky.ru/items?${category}&sortBy=${sortBy}${search}`
+          `https://6499a51979fbe9bcf83fb147.mockapi.io/items?page=${currentPage}&limit=${pizzasPerPage}&${category}&sortBy=${sortBy}${search}`
         );
         setIsLoading(false);
         window.scrollTo(0, 0);
@@ -38,7 +44,7 @@ function Home() {
       console.error("Ошибка при запросе данных!");
       alert("Ошибка при запросе данных!");
     }
-  }, [categoryId, sortType, searchValue]);
+  }, [categoryId, sortType, searchValue, currentPage]);
 
   const pizzaList = pizzas.map((obj) => {
     return <PizzaBlock key={obj.id} {...obj} />;
@@ -54,24 +60,17 @@ function Home() {
         <div className="content__top">
           <Categories
             categoryId={categoryId}
-            setCategoryId={setCategoryId}
-            onChangeCategory={(index) => {
-              setCategoryId(index);
-            }}
+            onChangeCategory={onChangeCategory}
           />
-          <Sort
-            value={sortType}
-            setSortType={setSortType}
-            onChangeSort={(index) => setSortType(index)}
-          />
+          <Sort />
         </div>
         <h2 className="content__title">Все пиццы</h2>
         <div className="content__items">
           {isLoading ? skeletons : pizzaList}
         </div>
         <Pagination
-          pizzasPerPage={4}
-          onChangePage={(namber) => setCurrentPage(namber)}
+          pizzasPerPage={pizzasPerPage}
+          onPageChange={(number) => setCurrentPage(number)}
         />
       </div>
     </>
