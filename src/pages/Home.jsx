@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import SkeletonLoader from "../components/PizzaBlock/SkeletonLoader";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
 import Sort from "../components/Sort";
 import Categories from "../components/Categories";
+import Pagination from "../components/Pagination/Pagination";
+import { AppContext } from "../App";
+
 function Home() {
+  const { searchValue } = useContext(AppContext);
   const [pizzas, setPizzas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortType, setSortType] = useState({
@@ -12,15 +16,18 @@ function Home() {
     sortProperty: "rating",
   });
   const [categoryId, setCategoryId] = useState(0);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pizzasPerPage] = useState(4);
+  const category = categoryId > 0 ? `category=*${categoryId}` : "";
+  const sortBy = sortType.sortProperty;
+  const search = searchValue ? `&title=*${searchValue}*` : "";
+  // page=${currentPage}&limit=${pizzasPerPage}&
   useEffect(() => {
     try {
       setIsLoading(true);
       async function axiosData() {
         const pizzasResponse = await axios.get(
-          `https://3e507001f067fc57.mokky.ru/items?${
-            categoryId > 0 ? `category=*${categoryId}` : ""
-          }&sortBy=${sortType.sortProperty}`
+          `https://3e507001f067fc57.mokky.ru/items?${category}&sortBy=${sortBy}${search}`
         );
         setIsLoading(false);
         window.scrollTo(0, 0);
@@ -31,7 +38,16 @@ function Home() {
       console.error("Ошибка при запросе данных!");
       alert("Ошибка при запросе данных!");
     }
-  }, [categoryId, sortType]);
+  }, [categoryId, sortType, searchValue]);
+
+  const pizzaList = pizzas.map((obj) => {
+    return <PizzaBlock key={obj.id} {...obj} />;
+  });
+
+  const skeletons = [...new Array(6)].map((_, index) => (
+    <SkeletonLoader key={index} />
+  ));
+
   return (
     <>
       <div className="container">
@@ -51,12 +67,12 @@ function Home() {
         </div>
         <h2 className="content__title">Все пиццы</h2>
         <div className="content__items">
-          {isLoading
-            ? [...new Array(6)].map((_, index) => (
-                <SkeletonLoader key={index} />
-              ))
-            : pizzas.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
+          {isLoading ? skeletons : pizzaList}
         </div>
+        <Pagination
+          pizzasPerPage={4}
+          onChangePage={(namber) => setCurrentPage(namber)}
+        />
       </div>
     </>
   );
