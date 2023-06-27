@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setCategoryId } from "../redux/slices/filterSlice";
+import { setCurrentPage, setCategoryId } from "../redux/slices/filterSlice";
 import axios from "axios";
 import SkeletonLoader from "../components/PizzaBlock/SkeletonLoader";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
@@ -12,31 +12,36 @@ import { AppContext } from "../App";
 function Home() {
   const dispatch = useDispatch();
   const categoryId = useSelector((state) => state.filterSlice.categoryId);
-  const sortType = useSelector((state) => state.filterSlice.sort);
+  const sort = useSelector((state) => state.filterSlice.sort);
+  const currentPage = useSelector((state) => state.filterSlice.currentPage);
 
   const { searchValue } = useContext(AppContext);
   const [pizzas, setPizzas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pizzasPerPage] = useState(4);
-  // page=${currentPage}&limit=${pizzasPerPage}&
+  // const [currentPage, setCurrentPage] = useState(1);
+  const [pizzasPerPage] = useState(6);
 
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
+  };
+  const onChangePage = (number) => {
+    dispatch(setCurrentPage(number));
   };
 
   useEffect(() => {
     try {
       setIsLoading(true);
-      const category = categoryId > 0 ? `category=*${categoryId}` : "";
-      const sortBy = sortType.sortProperty;
-      const search = searchValue ? `&title=*${searchValue}*` : "";
+      const category = categoryId > 0 ? `category=${categoryId}&` : "";
+      const sortBy = sort.sortProperty;
+      const search = searchValue ? `&title=${searchValue}` : "";
+
       async function axiosData() {
         const pizzasResponse = await axios.get(
-          `https://6499a51979fbe9bcf83fb147.mockapi.io/items?page=${currentPage}&limit=${pizzasPerPage}&${category}&sortBy=${sortBy}${search}`
+          `https://6499a51979fbe9bcf83fb147.mockapi.io/items?page=${currentPage}&limit=${pizzasPerPage}&${category}sortBy=${sortBy}${search}`
         );
         setIsLoading(false);
         window.scrollTo(0, 0);
+
         return setPizzas(pizzasResponse.data);
       }
       axiosData();
@@ -44,7 +49,7 @@ function Home() {
       console.error("Ошибка при запросе данных!");
       alert("Ошибка при запросе данных!");
     }
-  }, [categoryId, sortType, searchValue, currentPage]);
+  }, [categoryId, sort, searchValue, currentPage]);
 
   const pizzaList = pizzas.map((obj) => {
     return <PizzaBlock key={obj.id} {...obj} />;
@@ -69,8 +74,9 @@ function Home() {
           {isLoading ? skeletons : pizzaList}
         </div>
         <Pagination
+          currentPage={currentPage}
           pizzasPerPage={pizzasPerPage}
-          onPageChange={(number) => setCurrentPage(number)}
+          onPageChange={onChangePage}
         />
       </div>
     </>
