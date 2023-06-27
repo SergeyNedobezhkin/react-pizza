@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 
-function Categories({ categoryId, setCategoryId, onChangeCategory }) {
+function Categories({ categoryId, onChangeCategory }) {
   const categories = [
     "Все",
     "Мясные",
