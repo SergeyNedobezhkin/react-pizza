@@ -1,24 +1,30 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentPage, setCategoryId } from "../redux/slices/filterSlice";
+import {
+  setCurrentPage,
+  setCategoryId,
+  setFilters,
+} from "../redux/slices/filterSlice";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import qs from "qs";
 import SkeletonLoader from "../components/PizzaBlock/SkeletonLoader";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
-import Sort from "../components/Sort";
+import Sort, { list } from "../components/Sort";
 import Categories from "../components/Categories";
 import Pagination from "../components/Pagination/Pagination";
-import { AppContext } from "../App";
 
 function Home() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
   const categoryId = useSelector((state) => state.filterSlice.categoryId);
   const sort = useSelector((state) => state.filterSlice.sort);
   const currentPage = useSelector((state) => state.filterSlice.currentPage);
-
-  const { searchValue } = useContext(AppContext);
+  const searchValue = useSelector((state) => state.filterSlice.searchValue);
   const [pizzas, setPizzas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  // const [currentPage, setCurrentPage] = useState(1);
   const [pizzasPerPage] = useState(6);
 
   const onChangeCategory = (id) => {
@@ -27,8 +33,7 @@ function Home() {
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
   };
-
-  useEffect(() => {
+  const fetchPizzas = () => {
     try {
       setIsLoading(true);
       const category = categoryId > 0 ? `category=${categoryId}&` : "";
@@ -49,6 +54,38 @@ function Home() {
       console.error("Ошибка при запросе данных!");
       alert("Ошибка при запросе данных!");
     }
+  };
+  useEffect(() => {
+    //Изначально isMounted=false, но если был первый рендер, то тогда  isMounted=true и добавь URL-параметры в строку URL.
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sort.sortProperty,
+        categoryId,
+        currentPage,
+      });
+      navigate(`?${queryString}`);
+    }
+    //Если первый рендер завершился, то тогда измени на true
+    isMounted.current = true;
+  }, [categoryId, sort, searchValue, currentPage]);
+
+  // Если был первый рендер, то проверяем URL-параметры и сохраняем в redux
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+      const sort = list.find((obj) => obj.sortProperty === params.sortProperty);
+      dispatch(setFilters({ ...params, sort }));
+      isSearch.current = true;
+    }
+  }, []);
+
+  //Если был первый рендер то запрашиваем пиццы
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+    isSearch.current = false;
   }, [categoryId, sort, searchValue, currentPage]);
 
   const pizzaList = pizzas.map((obj) => {
