@@ -30,9 +30,11 @@ function Home() {
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
   };
+
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
   };
+
   const fetchPizzas = () => {
     try {
       setIsLoading(true);
@@ -46,7 +48,6 @@ function Home() {
         );
         setIsLoading(false);
         window.scrollTo(0, 0);
-
         return setPizzas(pizzasResponse.data);
       }
       axiosData();
@@ -55,6 +56,7 @@ function Home() {
       alert("Ошибка при запросе данных!");
     }
   };
+
   useEffect(() => {
     //Изначально isMounted=false, но если был первый рендер, то тогда  isMounted=true и добавь URL-параметры в строку URL.
     if (isMounted.current) {
@@ -67,7 +69,7 @@ function Home() {
     }
     //Если первый рендер завершился, то тогда измени на true
     isMounted.current = true;
-  }, [categoryId, sort, searchValue, currentPage]);
+  }, [categoryId, sort, currentPage]);
 
   // Если был первый рендер, то проверяем URL-параметры и сохраняем в redux
   useEffect(() => {

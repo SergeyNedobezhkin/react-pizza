@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 const initialState = {
   searchValue: "",
   categoryId: 0,
@@ -16,15 +17,19 @@ export const filterSlice = createSlice({
     setSearchValue(state, action) {
       state.searchValue = action.payload;
     },
+
     setCategoryId(state, action) {
       state.categoryId = action.payload;
     },
+
     setSortType(state, action) {
       state.sort = action.payload;
     },
+
     setCurrentPage(state, action) {
       state.currentPage = action.payload;
     },
+
     setFilters(state, action) {
       state.sort = action.payload.sort;
       state.currentPage = Number(action.payload.currentPage);

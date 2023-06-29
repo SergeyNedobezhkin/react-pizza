@@ -28,4 +28,5 @@ function Categories({ categoryId, onChangeCategory }) {
     </div>
   );
 }
+
 export default Categories;
