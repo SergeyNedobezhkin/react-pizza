@@ -6,7 +6,6 @@ import {
   setFilters,
 } from "../redux/slices/filterSlice";
 import { useNavigate } from "react-router-dom";
-
 import qs from "qs";
 import SkeletonLoader from "../components/PizzaBlock/SkeletonLoader";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
@@ -20,12 +19,10 @@ function Home() {
   const navigate = useNavigate();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
-  const categoryId = useSelector((state) => state.filterSlice.categoryId);
-  const sort = useSelector((state) => state.filterSlice.sort);
-  const currentPage = useSelector((state) => state.filterSlice.currentPage);
-  const searchValue = useSelector((state) => state.filterSlice.searchValue);
-  const items = useSelector((state) => state.pizzasSlice.items);
-  const status = useSelector((state) => state.pizzasSlice.status);
+  const { searchValue, currentPage, sort, categoryId } = useSelector(
+    (state) => state.filterSlice
+  );
+  const { items, status } = useSelector((state) => state.pizzasSlice);
   const [pizzasPerPage] = useState(6);
 
   const onChangeCategory = (id) => {
