@@ -5,7 +5,7 @@ import {
   setCategoryId,
   setFilters,
 } from "../redux/slices/filterSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import qs from "qs";
 import SkeletonLoader from "../components/PizzaBlock/SkeletonLoader";
 import PizzaBlock from "../components/PizzaBlock/PizzaBlock";
@@ -78,7 +78,11 @@ function Home() {
   }, [categoryId, sort, searchValue, currentPage]);
 
   const pizzaList = items.map((obj) => {
-    return <PizzaBlock key={obj.id} {...obj} />;
+    return (
+      <Link key={obj.id} to={`/pizza/${obj.id}`}>
+        <PizzaBlock {...obj} />
+      </Link>
+    );
   });
 
   const skeletons = [...new Array(6)].map((_, index) => (

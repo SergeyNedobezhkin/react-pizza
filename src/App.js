@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import NotFoundBlock from "./components/NotFoundBlock/NotFoundBlock";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
+import FullPizza from "./pages/FullPizza";
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/Cart" element={<Cart />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/pizza/:id" element={<FullPizza />} />
           <Route path="*" element={<NotFoundBlock />} />
         </Routes>
       </div>
